@@ -234,7 +234,7 @@ function formatHours(date) {
   return formattedHour;
 }
 /**
- * 
+ *
  * @function formatMinutes(date)
  * @param  {} date
  * @param  {} {letminutes=date.getMinutes(
@@ -321,6 +321,23 @@ function formatReportsOnOutput(input) {
 function Prayer(input) {
   this.date = JSON.stringify(timestamp(convertToDate(input.date)));
   this.prayer = formatTextboxes(input.prayer);
+}
+
+function PrayersOutput(input) {
+  this.prayer_id = input.id;
+  this.date = formatDate(timestamp(input.date));
+  this.prayer = formatTextboxOnOutput(input.prayer);
+  //TODO: remove the comments placeholder
+  this.comments = [
+    {
+      date: 'January 1, 2020',
+      update: 'Still an issue, working on a resolution'
+    },
+    {
+      date: 'February 1, 2020',
+      update: 'Still an issue, need more money to accomplish the task'
+    }
+  ];
 }
 
 //Prayer Update Constructor
@@ -526,11 +543,23 @@ function allChurches(request, response) {
     .catch(err => handleError(err, response));
 }
 
+function formatAllPrayersArray(input) {
+  let allPrayersArray = [];
+  for (let i = 0; i < input.length; i++) {
+    let prayerInfo = new PrayersOutput(input[i]);
+    console.log(prayerInfo);
+    allPrayersArray.push(prayerInfo);
+  }
+  return allPrayersArray;
+}
+
 function allPrayers(request, response) {
   let SQL = 'SELECT * FROM prayers ORDER BY date ASC;';
 
   return client.query(SQL).then(results => {
-    response.render('pages/prayer-requests', { prayers: results.rows });
+    let prayers = formatAllPrayersArray(results.rows);
+    console.log(results.rows, 'SQL prayers query');
+    response.render('pages/prayer-requests', { prayers: prayers });
   });
 }
 
@@ -611,16 +640,13 @@ function addChurch(request, response) {
 
 function addPrayer(request, response) {
   let prayer = new Prayer(request.body);
-  console.log(prayer);
 
   let SQL = 'INSERT INTO prayers (date, prayer) VALUES($1, $2) RETURNING id';
-  console.log(SQL);
   let values = [prayer.date, prayer.prayer];
-  console.log(values);
   client
     .query(SQL, values)
     .then(result => {
-      console.log(result);
+      console.log('this prayer was added to database:', result);
       response.redirect('/all_prayer_requests');
     })
     .catch(err => handleError(err, response));

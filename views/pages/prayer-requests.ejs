@@ -22,12 +22,21 @@
                         <%}%>
                         <!-- <ul class= "object-list"> -->
             </div>
-            <div class="CHANGE">
+            <div class="prayers">
                 <% prayers.forEach(prayer => { %>
             <div>
-                
-                <h3><%= prayer.prayer %></h3>
-                <h4>Added <%= prayer.date %></h4>
+                <h3><%=prayer.date%></h3>
+                <p><%= prayer.prayer %></p>
+
+                <h3>Updates:</h3>    
+                <% prayer.comments.forEach(comment => { %>
+                <section class="prayer-update">
+                    <p><%= comment.date %> - <%= comment.update %></p>
+                </section>
+                <% }) %>
+                <div class="line-break"></div>
+                <!-- TODO: Determine if want to show date the prayer was added. -->
+                <!-- <h4 id="prayer-date">Added <%= prayer.date %></h4> -->
                 <!-- <button><a href="/prayer/<%= prayer.id %>"></a>Add Update</a></button> -->
                 <!-- <div class="buttons">
                     <form action="/prayer/<%=prayer.id%>" method="POST">
@@ -35,9 +44,9 @@
                     <input type="submit" value="Delete">
                     </form>
                 </div> -->
-            <form class="add-prayer-update-form" action="/new-update" method="post">
+            <!-- <form class="add-prayer-update-form" action="/new-update" method="post"> -->
                 <!-- TODO: remove pink input outlines -->
-                <div class="line-break"></div>
+                <!-- <div class="line-break"></div>
                 
                 <div class = "form-title">
                     <h3><i class="fas fa-praying-hands"></i>Add a Prayer Request Update</h3>
@@ -49,7 +58,7 @@
                 <textarea name="comment" placeholder="Prayer Request Update" cols="30" rows="5" required></textarea>
                 
                 <button type="submit">Add Update</button>
-            </form>
+            </form> -->
                 <div>
                     <ul>
                         <li>
