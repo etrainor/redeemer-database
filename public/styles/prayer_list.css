@@ -140,10 +140,13 @@
 } */
 .prayers > div {
   font-family: 'Lato', sans-serif;
-  font-weight:lighter;
   font-size: 1.5rem;
   /* margin: 2rem 0; */
   width: 90%;
+}
+
+.prayers > div > p {
+  font-weight:lighter;
 }
 
 #prayer-date {
