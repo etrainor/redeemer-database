@@ -57,6 +57,7 @@ app.post('/new-church', addChurch);
 app.post('/new-pastor', addPastor);
 app.post('/new-minutes', addMinutes);
 app.post('/new-prayer', addPrayer);
+app.post('/new-update', addPrayerUpdate);
 app.delete('/church/:id', deleteRecord);
 app.delete('/pastor/:id', deleteRecord);
 app.delete('/meeting/:id', deleteRecord);
@@ -323,21 +324,21 @@ function Prayer(input) {
   this.prayer = formatTextboxes(input.prayer);
 }
 
-function PrayersOutput(input) {
-  this.prayer_id = input.id;
-  this.date = formatDate(timestamp(input.date));
-  this.prayer = formatTextboxOnOutput(input.prayer);
+function PrayersOutput(prayerInput, commentsInput) {
+  this.prayer_id = prayerInput.id;
+  this.date = formatDate(prayerInput.date);
+  this.prayer = formatTextboxOnOutput(prayerInput.prayer);
+  this.comments = [];
   //TODO: remove the comments placeholder
-  this.comments = [
-    {
-      date: 'January 1, 2020',
-      update: 'Still an issue, working on a resolution'
-    },
-    {
-      date: 'February 1, 2020',
-      update: 'Still an issue, need more money to accomplish the task'
+  for (let i = 0; i < commentsInput.length; i++) {
+    if (commentsInput[i].prayer_id === prayerInput.id) {
+      console.log('i found you');
+      this.comments.push({
+        date: formatDate(commentsInput[i].date),
+        update: commentsInput[i].comment
+      });
     }
-  ];
+  }
 }
 
 //Prayer Update Constructor
@@ -543,23 +544,36 @@ function allChurches(request, response) {
     .catch(err => handleError(err, response));
 }
 
-function formatAllPrayersArray(input) {
+function formatAllPrayersArray(prayers, comments) {
   let allPrayersArray = [];
-  for (let i = 0; i < input.length; i++) {
-    let prayerInfo = new PrayersOutput(input[i]);
+  for (let i = 0; i < prayers.length; i++) {
+    let prayerInfo = new PrayersOutput(prayers[i], comments);
     console.log(prayerInfo);
     allPrayersArray.push(prayerInfo);
   }
   return allPrayersArray;
 }
 
-function allPrayers(request, response) {
-  let SQL = 'SELECT * FROM prayers ORDER BY date ASC;';
-
+function getAllPrayerUpdates(request, response) {
+  let SQL = 'SELECT * FROM comments ORDER BY prayer_id ASC;';
   return client.query(SQL).then(results => {
-    let prayers = formatAllPrayersArray(results.rows);
-    console.log(results.rows, 'SQL prayers query');
-    response.render('pages/prayer-requests', { prayers: prayers });
+    let prayerComments = results.rows;
+    // console.log(prayerComments, 'prayer commerns from getAllPrayerUpdates');
+    return prayerComments;
+  });
+}
+function allPrayers(request, response) {
+  getAllPrayerUpdates().then(comments => {
+    console.log(comments, '??????????');
+    let SQL = 'SELECT * FROM prayers ORDER BY date ASC;';
+    return client
+      .query(SQL)
+      .then(results => {
+        let prayers = formatAllPrayersArray(results.rows, comments);
+        console.log(prayers, 'SQL prayers query');
+        response.render('pages/prayer-requests', { prayers: prayers });
+      })
+      .catch(err => handleError(err, response));
   });
 }
 
@@ -650,6 +664,24 @@ function addPrayer(request, response) {
       response.redirect('/all_prayer_requests');
     })
     .catch(err => handleError(err, response));
+}
+
+function addPrayerUpdate(request, response) {
+  let prayerUpdate = new UpdatePrayer(request.body);
+
+  let SQL =
+    'INSERT INTO comments (date, comment, prayer_id) VALUES($1, $2, $3)';
+
+  let values = [
+    prayerUpdate.date,
+    prayerUpdate.comment,
+    prayerUpdate.prayer_id
+  ];
+
+  client.query(SQL, values).then(result => {
+    console.log(result, 'what is this?');
+    response.redirect('/all_prayer_requests');
+  });
 }
 function addPastor(request, response) {
   let pastor = new Pastor(request.body);

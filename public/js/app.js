@@ -35,10 +35,8 @@ $('#cancel-change').on('click', function() {
 });
 
 $('.add-update').on('click', function(e) {
-  console.log('clicked');
   e.preventDefault();
   let id = $(this).attr('id');
-  console.log(id);
   $(`#add-update-${id}`).toggle();
 
   $('html, body').animate(
