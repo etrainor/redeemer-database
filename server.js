@@ -332,7 +332,10 @@ function PrayersOutput(prayerInput, commentsInput) {
   //TODO: remove the comments placeholder
   for (let i = 0; i < commentsInput.length; i++) {
     if (commentsInput[i].prayer_id === prayerInput.id) {
-      console.log('i found you');
+      // console.log('i found you');
+      // let hi = commentsInput[i].comment.join('<br>');
+      // console.log(hi);
+      // console.log(formatTextboxOnOutput(commentsInput[i].comment));
       this.comments.push({
         date: formatDate(commentsInput[i].date),
         update: commentsInput[i].comment
@@ -555,7 +558,7 @@ function formatAllPrayersArray(prayers, comments) {
 }
 
 function getAllPrayerUpdates(request, response) {
-  let SQL = 'SELECT * FROM comments ORDER BY prayer_id ASC;';
+  let SQL = 'SELECT * FROM comments ORDER BY id ASC;';
   return client.query(SQL).then(results => {
     let prayerComments = results.rows;
     // console.log(prayerComments, 'prayer commerns from getAllPrayerUpdates');

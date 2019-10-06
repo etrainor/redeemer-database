@@ -41,11 +41,17 @@
                     </div>
                 </div>
                 <p><%= prayer.prayer %></p>
-
-                <h3>Updates:</h3>    
+                <% if(prayer.comments.length !== 0) { %> 
+                <h3>Updates:</h3>
+                <%}%>    
                 <% prayer.comments.forEach(comment => { %>
                 <section class="prayer-update">
-                    <p><%= comment.date %> - <%= comment.update %></p>
+                    <div>
+                        <h3><%= comment.date %></h3>
+                        <p><%(comment.update).forEach(partialComment => { %> 
+                                <%= partialComment %><br><br>
+                                <%})%> </p>
+                    </div>
                     <div>
                         <div class="helper">
                             <a><i class="fas fa-edit"></i></a>
