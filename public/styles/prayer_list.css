@@ -155,9 +155,8 @@
 
 .prayer-update {
   background-color: rgba(190,83,71, 0.5);
-  margin-top: 1rem;
-  width: 90%;
-  margin-left: 4rem;
+  /* width: 90%; */
+  margin: 1rem 4rem 0 4rem;
   padding: 1rem;
   display: flex;
   flex-direction: row;
@@ -211,6 +210,35 @@
 
 .prayer-update:last-of-type {
   margin-bottom: 3rem;
+}
+form.helper {
+  padding: 0;
+}
+
+form.helper > button {
+  margin: 0;
+  padding: 0;
+  color: white;
+  background-color: transparent;
+  border: none;
+}
+
+.helper > button {
+  margin: 0;
+  padding: 0;
+  color: white;
+  background-color: transparent;
+  border: none;
+}
+
+.helper > button > a > i {
+  font-size: 1.5rem;
+  margin-left: 1rem;
+}
+
+form.helper > button > a > i {
+  font-size: 1.5rem;
+  margin-left: 1rem;
 }
 
 .helper {
