@@ -47,7 +47,7 @@ app.get('/', homePage);
 app.get('/all_churches', allChurches);
 app.get('/all_pastors', allPastors);
 app.get('/all_meetings', allMeetings);
-app.get('/all_prayer_requests', allPrayers);
+app.get('/all_prayers', allPrayers);
 app.get('/add', addSelection);
 app.get('/church/:id', getSingleChurch);
 app.get('/pastor/:id', getSinglePastor);
@@ -61,6 +61,7 @@ app.post('/new-update', addPrayerUpdate);
 app.delete('/church/:id', deleteRecord);
 app.delete('/pastor/:id', deleteRecord);
 app.delete('/meeting/:id', deleteRecord);
+app.delete('/prayer/:id', deleteRecord);
 app.put('/pastor/edit/:id', updateRecord);
 app.put('/church/edit/:id', updateRecord);
 
@@ -121,7 +122,7 @@ function getSingleMeeting(request, response) {
       client
         .query(SQL, values)
         .then(result => {
-          console.log(result, 'meeting results');
+          // console.log(result, 'meeting results');
           let reports = JSON.parse(
             new GetMinutes(result.rows[0]).church_reports
           ).church_reports;
@@ -148,7 +149,7 @@ function getSingleReport(request, response) {
       client
         .query(SQL, values)
         .then(result => {
-          console.log(result, 'meeting results');
+          // console.log(result, 'meeting results');
           let reports = JSON.parse(
             new GetMinutes(result.rows[0]).church_reports
           ).church_reports;
@@ -551,7 +552,7 @@ function formatAllPrayersArray(prayers, comments) {
   let allPrayersArray = [];
   for (let i = 0; i < prayers.length; i++) {
     let prayerInfo = new PrayersOutput(prayers[i], comments);
-    console.log(prayerInfo);
+    // console.log(prayerInfo);
     allPrayersArray.push(prayerInfo);
   }
   return allPrayersArray;
@@ -567,13 +568,13 @@ function getAllPrayerUpdates(request, response) {
 }
 function allPrayers(request, response) {
   getAllPrayerUpdates().then(comments => {
-    console.log(comments, '??????????');
+    // console.log(comments, '??????????');
     let SQL = 'SELECT * FROM prayers ORDER BY date ASC;';
     return client
       .query(SQL)
       .then(results => {
         let prayers = formatAllPrayersArray(results.rows, comments);
-        console.log(prayers, 'SQL prayers query');
+        // console.log(prayers, 'SQL prayers query');
         response.render('pages/prayer-requests', { prayers: prayers });
       })
       .catch(err => handleError(err, response));
@@ -626,9 +627,9 @@ function addSelection(request, response) {
 }
 
 function addChurch(request, response) {
-  console.log(request.body, 'request.body for addChurch');
+  // console.log(request.body, 'request.body for addChurch');
   let church = new Church(request.body);
-  console.log(church, 'church after constructor');
+  // console.log(church, 'church after constructor');
 
   let SQL =
     'INSERT INTO churches(name, longitude, latitude, map_url, location, church_members, sunday_school, pre_school, feeding_program, description, community) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id;';
@@ -664,7 +665,7 @@ function addPrayer(request, response) {
     .query(SQL, values)
     .then(result => {
       console.log('this prayer was added to database:', result);
-      response.redirect('/all_prayer_requests');
+      response.redirect('/all_prayers');
     })
     .catch(err => handleError(err, response));
 }
@@ -682,8 +683,8 @@ function addPrayerUpdate(request, response) {
   ];
 
   client.query(SQL, values).then(result => {
-    console.log(result, 'what is this?');
-    response.redirect('/all_prayer_requests');
+    // console.log(result, 'what is this?');
+    response.redirect('/all_prayers');
   });
 }
 function addPastor(request, response) {
@@ -714,7 +715,7 @@ function addPastor(request, response) {
 
 function addMinutes(request, response) {
   let minutes = new Minutes(request.body);
-  console.log(minutes, 'what does reports looks like?');
+  // console.log(minutes, 'what does reports looks like?');
 
   let SQL =
     'INSERT INTO meetings (date, day, formatted_date, start_time, end_time, venue, meeting_host, presiding_officer, agenda, minutes_taken_by, attendees, opening_prayer_by, gods_message_by, general_notes, church_reports, other_matters, next_meeting, next_meeting_formatted, next_meeting_day, next_time, next_location, next_location_host, closing_prayer_by) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23) RETURNING id;';
@@ -817,19 +818,23 @@ function deleteRecord(request, response) {
       database = 'pastors';
     } else if (path === 'meeting') {
       database = 'meetings';
+    } else if (path === 'prayer') {
+      database = 'prayers';
     }
     return database;
   }
   let database = '';
 
   let current = getDatabase(getPath(request, response));
+  console.log(current, 'this is the database i want to delete from');
 
   let SQL = `DELETE FROM ${current} WHERE id=$1;`;
-  let values = [request.params.id];
 
+  let values = [request.params.id];
+  // console.log(values);
   return client
     .query(SQL, values)
-    .then(response.redirect(`/all_${current}`))
+    .then(() => response.redirect(`/all_${current}`))
     .catch(err => handleError(err, response));
 }
 
