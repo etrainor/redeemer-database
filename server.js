@@ -62,6 +62,7 @@ app.delete('/church/:id', deleteRecord);
 app.delete('/pastor/:id', deleteRecord);
 app.delete('/meeting/:id', deleteRecord);
 app.delete('/prayer/:id', deleteRecord);
+app.delete('/prayer-update/:id', deleteRecord);
 app.put('/pastor/edit/:id', updateRecord);
 app.put('/church/edit/:id', updateRecord);
 
@@ -338,6 +339,7 @@ function PrayersOutput(prayerInput, commentsInput) {
       // console.log(hi);
       // console.log(formatTextboxOnOutput(commentsInput[i].comment));
       this.comments.push({
+        id: commentsInput[i].id,
         date: formatDate(commentsInput[i].date),
         update: commentsInput[i].comment
       });
@@ -552,7 +554,7 @@ function formatAllPrayersArray(prayers, comments) {
   let allPrayersArray = [];
   for (let i = 0; i < prayers.length; i++) {
     let prayerInfo = new PrayersOutput(prayers[i], comments);
-    // console.log(prayerInfo);
+    console.log(prayerInfo, 'formatAllPrayers');
     allPrayersArray.push(prayerInfo);
   }
   return allPrayersArray;
@@ -562,7 +564,10 @@ function getAllPrayerUpdates(request, response) {
   let SQL = 'SELECT * FROM comments ORDER BY id ASC;';
   return client.query(SQL).then(results => {
     let prayerComments = results.rows;
-    // console.log(prayerComments, 'prayer commerns from getAllPrayerUpdates');
+    console.log(
+      prayerComments[0].id,
+      'prayer comments from getAllPrayerUpdates'
+    );
     return prayerComments;
   });
 }
@@ -574,7 +579,7 @@ function allPrayers(request, response) {
       .query(SQL)
       .then(results => {
         let prayers = formatAllPrayersArray(results.rows, comments);
-        // console.log(prayers, 'SQL prayers query');
+        console.log(prayers, 'SQL prayers query');
         response.render('pages/prayer-requests', { prayers: prayers });
       })
       .catch(err => handleError(err, response));
@@ -813,20 +818,21 @@ function updateRecord(request, response) {
 function deleteRecord(request, response) {
   function getDatabase(path) {
     if (path === 'church') {
-      database = 'churches';
+      table = 'churches';
     } else if (path === 'pastor') {
-      database = 'pastors';
+      table = 'pastors';
     } else if (path === 'meeting') {
-      database = 'meetings';
+      table = 'meetings';
     } else if (path === 'prayer') {
-      database = 'prayers';
+      table = 'prayers';
+    } else if (path === 'prayer-update') {
+      table = 'comments';
     }
-    return database;
+    return table;
   }
-  let database = '';
+  let table = '';
 
   let current = getDatabase(getPath(request, response));
-  console.log(current, 'this is the database i want to delete from');
 
   let SQL = `DELETE FROM ${current} WHERE id=$1;`;
 
@@ -834,7 +840,13 @@ function deleteRecord(request, response) {
   // console.log(values);
   return client
     .query(SQL, values)
-    .then(() => response.redirect(`/all_${current}`))
+    .then(() => {
+      if (current === 'comments') {
+        current = 'prayers';
+      }
+      response.redirect(`/all_${current}`);
+    })
+
     .catch(err => handleError(err, response));
 }
 

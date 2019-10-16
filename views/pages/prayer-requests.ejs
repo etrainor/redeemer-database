@@ -62,10 +62,13 @@
                             <span class="helper-text" id="prayer-edit">Edit</span>
                         </div>
                         <div class="helper">
-                            <a><i class="fas fa-trash-alt"></i></a>
-                            <span class="helper-text">Delete</span>
-                            </div>
+                            <form action="/prayer-update/<%=comment.id%>" method="POST" class="helper">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit"><a><i class="fas fa-trash-alt"></i></a></button>
+                                <span class="helper-text">Delete</span>
+                            </form>
                         </div>
+                    </div>
                 </section>
                 <% }) %>
                 
