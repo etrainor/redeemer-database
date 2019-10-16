@@ -47,7 +47,7 @@ app.get('/', homePage);
 app.get('/all_churches', allChurches);
 app.get('/all_pastors', allPastors);
 app.get('/all_meetings', allMeetings);
-app.get('/all_prayer_requests', allPrayers);
+app.get('/all_prayers', allPrayers);
 app.get('/add', addSelection);
 app.get('/church/:id', getSingleChurch);
 app.get('/pastor/:id', getSinglePastor);
@@ -57,9 +57,12 @@ app.post('/new-church', addChurch);
 app.post('/new-pastor', addPastor);
 app.post('/new-minutes', addMinutes);
 app.post('/new-prayer', addPrayer);
+app.post('/new-update', addPrayerUpdate);
 app.delete('/church/:id', deleteRecord);
 app.delete('/pastor/:id', deleteRecord);
 app.delete('/meeting/:id', deleteRecord);
+app.delete('/prayer/:id', deleteRecord);
+app.delete('/prayer-update/:id', deleteRecord);
 app.put('/pastor/edit/:id', updateRecord);
 app.put('/church/edit/:id', updateRecord);
 
@@ -120,7 +123,7 @@ function getSingleMeeting(request, response) {
       client
         .query(SQL, values)
         .then(result => {
-          console.log(result, 'meeting results');
+          // console.log(result, 'meeting results');
           let reports = JSON.parse(
             new GetMinutes(result.rows[0]).church_reports
           ).church_reports;
@@ -147,7 +150,7 @@ function getSingleReport(request, response) {
       client
         .query(SQL, values)
         .then(result => {
-          console.log(result, 'meeting results');
+          // console.log(result, 'meeting results');
           let reports = JSON.parse(
             new GetMinutes(result.rows[0]).church_reports
           ).church_reports;
@@ -234,7 +237,7 @@ function formatHours(date) {
   return formattedHour;
 }
 /**
- * 
+ *
  * @function formatMinutes(date)
  * @param  {} date
  * @param  {} {letminutes=date.getMinutes(
@@ -321,6 +324,27 @@ function formatReportsOnOutput(input) {
 function Prayer(input) {
   this.date = JSON.stringify(timestamp(convertToDate(input.date)));
   this.prayer = formatTextboxes(input.prayer);
+}
+
+function PrayersOutput(prayerInput, commentsInput) {
+  this.prayer_id = prayerInput.id;
+  this.date = formatDate(prayerInput.date);
+  this.prayer = formatTextboxOnOutput(prayerInput.prayer);
+  this.comments = [];
+  //TODO: remove the comments placeholder
+  for (let i = 0; i < commentsInput.length; i++) {
+    if (commentsInput[i].prayer_id === prayerInput.id) {
+      // console.log('i found you');
+      // let hi = commentsInput[i].comment.join('<br>');
+      // console.log(hi);
+      // console.log(formatTextboxOnOutput(commentsInput[i].comment));
+      this.comments.push({
+        id: commentsInput[i].id,
+        date: formatDate(commentsInput[i].date),
+        update: commentsInput[i].comment
+      });
+    }
+  }
 }
 
 //Prayer Update Constructor
@@ -526,11 +550,39 @@ function allChurches(request, response) {
     .catch(err => handleError(err, response));
 }
 
-function allPrayers(request, response) {
-  let SQL = 'SELECT * FROM prayers ORDER BY date ASC;';
+function formatAllPrayersArray(prayers, comments) {
+  let allPrayersArray = [];
+  for (let i = 0; i < prayers.length; i++) {
+    let prayerInfo = new PrayersOutput(prayers[i], comments);
+    console.log(prayerInfo, 'formatAllPrayers');
+    allPrayersArray.push(prayerInfo);
+  }
+  return allPrayersArray;
+}
 
+function getAllPrayerUpdates(request, response) {
+  let SQL = 'SELECT * FROM comments ORDER BY id ASC;';
   return client.query(SQL).then(results => {
-    response.render('pages/prayer-requests', { prayers: results.rows });
+    let prayerComments = results.rows;
+    console.log(
+      prayerComments[0].id,
+      'prayer comments from getAllPrayerUpdates'
+    );
+    return prayerComments;
+  });
+}
+function allPrayers(request, response) {
+  getAllPrayerUpdates().then(comments => {
+    // console.log(comments, '??????????');
+    let SQL = 'SELECT * FROM prayers ORDER BY date ASC;';
+    return client
+      .query(SQL)
+      .then(results => {
+        let prayers = formatAllPrayersArray(results.rows, comments);
+        console.log(prayers, 'SQL prayers query');
+        response.render('pages/prayer-requests', { prayers: prayers });
+      })
+      .catch(err => handleError(err, response));
   });
 }
 
@@ -580,9 +632,9 @@ function addSelection(request, response) {
 }
 
 function addChurch(request, response) {
-  console.log(request.body, 'request.body for addChurch');
+  // console.log(request.body, 'request.body for addChurch');
   let church = new Church(request.body);
-  console.log(church, 'church after constructor');
+  // console.log(church, 'church after constructor');
 
   let SQL =
     'INSERT INTO churches(name, longitude, latitude, map_url, location, church_members, sunday_school, pre_school, feeding_program, description, community) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id;';
@@ -611,19 +663,34 @@ function addChurch(request, response) {
 
 function addPrayer(request, response) {
   let prayer = new Prayer(request.body);
-  console.log(prayer);
 
   let SQL = 'INSERT INTO prayers (date, prayer) VALUES($1, $2) RETURNING id';
-  console.log(SQL);
   let values = [prayer.date, prayer.prayer];
-  console.log(values);
   client
     .query(SQL, values)
     .then(result => {
-      console.log(result);
-      response.redirect('/all_prayer_requests');
+      console.log('this prayer was added to database:', result);
+      response.redirect('/all_prayers');
     })
     .catch(err => handleError(err, response));
+}
+
+function addPrayerUpdate(request, response) {
+  let prayerUpdate = new UpdatePrayer(request.body);
+
+  let SQL =
+    'INSERT INTO comments (date, comment, prayer_id) VALUES($1, $2, $3)';
+
+  let values = [
+    prayerUpdate.date,
+    prayerUpdate.comment,
+    prayerUpdate.prayer_id
+  ];
+
+  client.query(SQL, values).then(result => {
+    // console.log(result, 'what is this?');
+    response.redirect('/all_prayers');
+  });
 }
 function addPastor(request, response) {
   let pastor = new Pastor(request.body);
@@ -653,7 +720,7 @@ function addPastor(request, response) {
 
 function addMinutes(request, response) {
   let minutes = new Minutes(request.body);
-  console.log(minutes, 'what does reports looks like?');
+  // console.log(minutes, 'what does reports looks like?');
 
   let SQL =
     'INSERT INTO meetings (date, day, formatted_date, start_time, end_time, venue, meeting_host, presiding_officer, agenda, minutes_taken_by, attendees, opening_prayer_by, gods_message_by, general_notes, church_reports, other_matters, next_meeting, next_meeting_formatted, next_meeting_day, next_time, next_location, next_location_host, closing_prayer_by) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23) RETURNING id;';
@@ -751,24 +818,35 @@ function updateRecord(request, response) {
 function deleteRecord(request, response) {
   function getDatabase(path) {
     if (path === 'church') {
-      database = 'churches';
+      table = 'churches';
     } else if (path === 'pastor') {
-      database = 'pastors';
+      table = 'pastors';
     } else if (path === 'meeting') {
-      database = 'meetings';
+      table = 'meetings';
+    } else if (path === 'prayer') {
+      table = 'prayers';
+    } else if (path === 'prayer-update') {
+      table = 'comments';
     }
-    return database;
+    return table;
   }
-  let database = '';
+  let table = '';
 
   let current = getDatabase(getPath(request, response));
 
   let SQL = `DELETE FROM ${current} WHERE id=$1;`;
-  let values = [request.params.id];
 
+  let values = [request.params.id];
+  // console.log(values);
   return client
     .query(SQL, values)
-    .then(response.redirect(`/all_${current}`))
+    .then(() => {
+      if (current === 'comments') {
+        current = 'prayers';
+      }
+      response.redirect(`/all_${current}`);
+    })
+
     .catch(err => handleError(err, response));
 }
 

@@ -138,3 +138,149 @@
   text-decoration: none;
   color: white;
 } */
+.prayers > div {
+  font-family: 'Lato', sans-serif;
+  font-size: 1.5rem;
+  /* margin: 2rem 0; */
+  width: 90%;
+}
+
+.prayers > div > p {
+  font-weight:lighter;
+}
+
+#prayer-date {
+  text-align: end;
+}
+
+.prayer-update {
+  background-color: rgba(190,83,71, 0.5);
+  /* width: 90%; */
+  margin: 1rem 4rem 0 4rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.prayer-update > div:nth-of-type(1) {
+  display: flex;
+  flex-direction: column;
+}
+
+.prayer-update > div:nth-of-type(1) > h3 {
+  margin-bottom: 1rem;
+  font-family: 'Cinzel', serif;
+}
+
+.prayer-update > div:last-of-type {
+  display: flex;
+  flex-direction: row;
+}
+
+.prayer-update > div > div > a > i {
+  font-size: 1.5rem;
+  margin-left: 1rem;
+  justify-self: flex-end;
+}
+.prayers > div > h3:nth-of-type(1), .prayers > div > div > h3:nth-of-type(1) {
+  width: 90%;
+  margin: 2rem 0 1rem 4rem;
+  color: white;
+  font-weight: normal;
+  font-family: 'Cinzel', serif;
+}
+.prayers > div > section > p {
+  font-family: 'Lato', sans-serif;
+  font-weight:lighter;
+  font-size: 1.5rem;
+}
+.prayers > div > div {
+  display: flex;
+  flex-direction: row;
+}
+.prayers > div > div > div > a > i {
+  font-size: 1.5rem;
+  margin-left: 1rem;
+  justify-self: flex-end;
+}
+.prayers > div > div > h3:nth-of-type(1) {
+  margin: 0rem 0rem 1rem 0rem;
+}
+
+.prayer-update:last-of-type {
+  margin-bottom: 3rem;
+}
+form.helper {
+  padding: 0;
+}
+
+form.helper > button {
+  margin: 0;
+  padding: 0;
+  color: white;
+  background-color: transparent;
+  border: none;
+}
+
+.helper > button {
+  margin: 0;
+  padding: 0;
+  color: white;
+  background-color: transparent;
+  border: none;
+}
+
+.helper > button > a > i {
+  font-size: 1.5rem;
+  margin-left: 1rem;
+}
+
+form.helper > button > a > i {
+  font-size: 1.5rem;
+  margin-left: 1rem;
+}
+
+.helper {
+  position: relative;
+}
+.helper > .helper-text {
+  visibility:hidden;
+  background-color: #be5347;
+  color: white;
+  position: absolute;
+  bottom: 115%;
+  left: 50%;
+  margin-left: -1.2rem;
+  z-index: 1;
+  font-size: .75rem;
+  font-family: 'Lato', sans-serif;
+  font-weight:lighter;
+  padding: .5rem;
+}
+
+.helper:hover > .helper-text {
+  visibility: visible;
+}
+
+#helper-update {
+  width: 7rem;
+  text-align: center;
+  margin-left: -3.5rem;
+}
+
+#prayer-edit {
+  margin-left: -.9rem;
+}
+
+.add-prayer-update-form {
+  /* width: 90%; */
+  margin: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.add-prayer-update-form > textarea {
+  border: none;
+  outline: none;
+}

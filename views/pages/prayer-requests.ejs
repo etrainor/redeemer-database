@@ -22,22 +22,58 @@
                         <%}%>
                         <!-- <ul class= "object-list"> -->
             </div>
-            <div class="CHANGE">
+            <div class="prayers">
                 <% prayers.forEach(prayer => { %>
             <div>
+                <div>
+                    <h3><%=prayer.date%></h3>
+                    <div class="helper">
+                        <a><i class="fas fa-plus-square add-update" id="<%=prayer.prayer_id%>"></i></a>
+                        <span class="helper-text" id="helper-update">Add Status Update</span>
+                    </div>
+                    <div class="helper">
+                            <form action="/prayer/<%=prayer.prayer_id%>" method="POST" class="helper">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit"><a><i class="fas fa-trash-alt"></i></a></button>
+                                <span class="helper-text">Delete</span>
+                              </form>
+                        <!-- <a><i class="fas fa-trash-alt"></i></a> -->
+                    </div>
+                    <div class="helper">
+                        <button><a><i class="fas fa-edit"></i></a></button>
+                        <span class="helper-text" id="prayer-edit">Edit</span>
+                    </div>
+                </div>
+                <p><%= prayer.prayer %></p>
+                <% if(prayer.comments.length !== 0) { %> 
+                <h3>Updates:</h3>
+                <%}%>    
+                <% prayer.comments.forEach(comment => { %>
+                <section class="prayer-update">
+                    <div>
+                        <h3><%= comment.date %></h3>
+                        <p><%(comment.update).forEach(partialComment => { %> 
+                                <%= partialComment %><br><br>
+                                <%})%> </p>
+                    </div>
+                    <div>
+                        <div class="helper">
+                            <a><i class="fas fa-edit"></i></a>
+                            <span class="helper-text" id="prayer-edit">Edit</span>
+                        </div>
+                        <div class="helper">
+                            <form action="/prayer-update/<%=comment.id%>" method="POST" class="helper">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit"><a><i class="fas fa-trash-alt"></i></a></button>
+                                <span class="helper-text">Delete</span>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+                <% }) %>
                 
-                <h3><%= prayer.prayer %></h3>
-                <h4>Added <%= prayer.date %></h4>
-                <!-- <button><a href="/prayer/<%= prayer.id %>"></a>Add Update</a></button> -->
-                <!-- <div class="buttons">
-                    <form action="/prayer/<%=prayer.id%>" method="POST">
-                    <input type="hidden" name="_method" value="DELETE">
-                    <input type="submit" value="Delete">
-                    </form>
-                </div> -->
-            <form class="add-prayer-update-form" action="/new-update" method="post">
+            <form class="add-prayer-update-form" id="add-update-<%=prayer.prayer_id%>"action="/new-update" method="post">
                 <!-- TODO: remove pink input outlines -->
-                <div class="line-break"></div>
                 
                 <div class = "form-title">
                     <h3><i class="fas fa-praying-hands"></i>Add a Prayer Request Update</h3>
@@ -50,15 +86,8 @@
                 
                 <button type="submit">Add Update</button>
             </form>
-                <div>
-                    <ul>
-                        <li>
-                            <!-- <h4>Date</h4>
-                            <h4>Update Text</h4> -->
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            <div class="line-break"></div>  
+        </div>
         <% }) %>
         <!-- </ul> -->
     </div>

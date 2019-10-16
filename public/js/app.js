@@ -5,9 +5,11 @@ $('.add-church-form').hide();
 $('.add-pastor-form').hide();
 $('.add-minutes-form').hide();
 $('.add-budget-form').hide();
+
 $('.add-prayer-requests-form').hide();
 $('#single-pastor-edit-form').hide();
 $('#single-church-edit-form').hide();
+$('.add-prayer-update-form').hide();
 // $('.line-break').hide();
 
 // TODO: Determine if I want to hide the line-break... Could move where the div is and hide/show it before the toggle it was not affected by the div being toggled. Might solve the delay problem.
@@ -31,6 +33,21 @@ $('#cancel-change').on('click', function() {
   $('#single-church').toggle();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+$('.add-update').on('click', function(e) {
+  e.preventDefault();
+  let id = $(this).attr('id');
+  $(`#add-update-${id}`).toggle();
+
+  $('html, body').animate(
+    {
+      scrollTop: $(`#add-update-${id}`).offset().top - 250
+    },
+    700
+  );
+  // $(`#add-update-${id}`).scrollTo({ top: 0, behavior: 'smooth' });
+});
+
 // TODO: DRY up repetitive button click handlers!
 $('.add-church-button').on('click', function() {
   if ($('.add-pastor-button').hasClass('selected') === true) {

@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS comments (
   id SERIAL PRIMARY KEY,
   date DATE,
   comment TEXT[],
-  prayer_id INT REFERENCES prayers(id)
+  prayer_id INT REFERENCES prayers(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS churches (

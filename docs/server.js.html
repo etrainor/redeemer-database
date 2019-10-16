@@ -75,7 +75,7 @@ app.get('/', homePage);
 app.get('/all_churches', allChurches);
 app.get('/all_pastors', allPastors);
 app.get('/all_meetings', allMeetings);
-app.get('/all_prayer_requests', allPrayers);
+app.get('/all_prayers', allPrayers);
 app.get('/add', addSelection);
 app.get('/church/:id', getSingleChurch);
 app.get('/pastor/:id', getSinglePastor);
@@ -643,7 +643,7 @@ function addPrayer(request, response) {
     .query(SQL, values)
     .then(result => {
       console.log(result);
-      response.redirect('/all_prayer_requests');
+      response.redirect('/all_prayers');
     })
     .catch(err => handleError(err, response));
 }
