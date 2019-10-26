@@ -15,7 +15,7 @@ Redeemer of Life Ministries is a non-profit religious organization in the Philli
 ## Planned Features and Tasks
 - Implement OAuth to prevent unauthorized database access
 - Add the ability to update the meeting minutes and prayer request details
-- All the user to dynamically choose which data is published to the (intended) React front end by checking a box or clicking a button.
+- Allow the user to dynamically choose which data is published to the (intended) React front end by checking a box or clicking a button.
 - Modularize the current code base and DRY up repetitive functions.
 - Additional CSS to improve site appearance
 - Implement a SCSS compiler and refactor the current CSS into SCSS
