@@ -11,6 +11,8 @@ Redeemer of Life Ministries is a non-profit religious organization in the Philli
 - Can ADD and DELETE Meeting Minutes and Prayer Requests
 - Can ADD and DELETE updates to an existing Prayer Request
 - Can display a single record or a list of records that are currently stored in the database
+- Can print a formatted meeting minutes report
+- Meeting minutes form dynamically grows based on the size of the database
 
 ## Planned Features and Tasks
 - Implement OAuth to prevent unauthorized database access
@@ -20,3 +22,4 @@ Redeemer of Life Ministries is a non-profit religious organization in the Philli
 - Additional CSS to improve site appearance
 - Implement a SCSS compiler and refactor the current CSS into SCSS
 - Add the ability to access the Imgur API to allow the user to access album photos to be used for promotional purposes.
+- Refactor the CSS for tablet view.
