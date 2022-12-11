@@ -17,7 +17,7 @@
   "dependencies": {
     "dotenv": "^7.0.0",
     "ejs": "^2.6.1",
-    "express": "^4.16.2",
+    "express": "^4.17.3",
     "jsdoc": "^3.6.3",
     "jspdf": "^1.5.3",
     "method-override": "^3.0.0",
